@@ -1,0 +1,10 @@
+Revision history for Perl extension Getopt::Auto.
+
+1.0   Fri Jan  3 12:33:09 2003
+	- original version; created by h2xs 1.21 with options
+		-XA -n Getopt::Auto
+
+1.9.0 Thu Dec  3 16:42:08 PST 2009
+    Completed according to original intent of incomplete
+    version 1.0. Version is '1.9.0' in anticipation of going to
+    2.0 when bugs are worked out.

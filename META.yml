@@ -1,0 +1,27 @@
+---
+name: Getopt-Auto
+version: 1.9.0
+author:
+  - 'Geoffrey Leach <geoff@hughes.net>'
+abstract: Option framework for command-line applications
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+build_requires:
+  File::Basename: 0
+  File::Spec: 0
+  File::Spec::Functions: 0
+  Pod::Usage: 0
+  Readonly: 0
+  Test::More: 0
+  Test::Output: 0
+provides:
+  Getopt::Auto:
+    file: lib/Getopt/Auto.pm
+    version: 1.9.0
+  Getopt::Auto::PodExtract:
+    file: lib/Getopt/Auto.pm
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
