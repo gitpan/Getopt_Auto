@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
 #      COMPANY:
-#      VERSION:  1..9.0
+#      VERSION:  1.9.1
 #      CREATED:  11/05/2009 04:31:11 PM
 #     REVISION:  ---
 #===============================================================================
@@ -26,7 +26,7 @@ use Test::Output;
 use Getopt::Auto( { test => 1 } );
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 ## no critic (ProhibitImplicitNewlines)
 ## no critic (ProtectPrivateSubs)
@@ -37,16 +37,17 @@ our $VERSION = "1.9.0";
 
 # Will be assigned by Getopt::Auto
 our %options;
+if ( %options ) {}; # Avoid complaints from perl-5.6.2
 
 # What we expect to find in the spec list
 my @exspec = (
-    [ '--tar', '', undef, \&tar ],
+    [ '--bar', 'do a bar', undef, \&bar ],
     [   '--foo', 'do a foo', 'Test long help for foo.
 
 And this is the second paragraph for foo\'s help.
 ', \&foo
     ],
-    [ '--bar', 'do a bar', undef, \&bar ],
+    [ '--tar', '', undef, \&tar ],
 );
 
 # What we expect to find in the options hash

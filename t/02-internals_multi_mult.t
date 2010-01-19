@@ -18,7 +18,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
 #      COMPANY:
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  11/05/2009 04:32:25 PM
 #     REVISION:  ---
 #===============================================================================
@@ -27,7 +27,7 @@ use strict;
 use warnings;
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 use Test::More tests => 5;
 
@@ -51,6 +51,8 @@ use Getopt::Auto(
 our %options;    # Will be assigned by Getopt::Auto
 
 # What we expect to find in the spec list
+# Note: ordering here. First come the contributions from 'use Getopt::Auto' in
+# the same order as they appear. Next the contributions from the POD, in sorted order.
 my @exspec = (
     [   '--foo', 'do a foo', 'Test
 ', \&foo
@@ -61,6 +63,7 @@ my @exspec = (
     [   '--bar-bar', 'do a bar-bar', 'Test
 ', \&bar_bar
     ],
+    [  '--tar-tar', 'do a tar-tar', undef, undef ],
 );
 
 # What we expect to find in the options hash
@@ -84,6 +87,13 @@ my %ex_options = (
 ',
         'code'       => \&foo,
         'shorthelp'  => 'do a foo',
+        'options'    => 'main::options',
+        'package'    => 'main',
+        'registered' => 1,
+    },
+    '--tar-tar' => {
+        'longhelp' => undef,
+        'shorthelp'  => 'do a tar-tar',
         'options'    => 'main::options',
         'package'    => 'main',
         'registered' => 1,
@@ -131,6 +141,8 @@ exit 0;
 __END__
 
 =pod
+
+=head2 --tar-tar - do a tar-tar
 
 =head2 --bar-bar - do a bar-bar
 

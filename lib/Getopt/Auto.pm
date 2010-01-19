@@ -13,7 +13,7 @@
 # REQUIREMENTS:  --- See Build.PL
 #         BUGS:  --- Hah!
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #     REVISION:  ---
 #===============================================================================
 
@@ -42,7 +42,7 @@ Readonly::Scalar my $LONG    => 2;
 Readonly::Array my @TYPES    => qw( bare short long );
 Readonly::Array my @PREFIXES => ( $EMPTY, $DASH, $DDASH );
 
-our $VERSION = '1.9.0';
+our $VERSION = '1.9.1';
 
 # Perlcritic complains about print to STDOUT. As this is merely for
 # diagnostic purposes, it seems futile to fix them.
@@ -440,8 +440,10 @@ sub _parse_pod {
         }
 
         # Now move what the POD processing found into a useful format.
-        my ( $n, $spec, @this_spec );
-        while ( ( $n, $spec ) = each %{ $pod->{'funcs'} } ) {
+        # Correction 1.9.0 => 1.9.1 courtesy of Bruce Gray
+        my @this_spec;
+        foreach my $n ( sort keys %{ $pod->{'funcs'} } ) {
+            my $spec = $pod->{'funcs'}{$n};
 
             if ( exists $spec->{'longhelp'} ) {
                 $spec->{'longhelp'} =~ s{\n+\z}{\n}smx;
@@ -799,7 +801,7 @@ EOF
         }
     }
     print qq{This is the built-in help, exiting\n};
-    if ( not exists $config{'test'} ) { exit 0; }
+    if ( not defined $config{'test'} ) { exit 0; }
     return;
 }
 
@@ -1598,7 +1600,7 @@ removed in future versions unless someone makes a fuss.
 
 =head1 VERSION
 
-Version 1.9.0
+Version 1.9.1
 
 =head1 AUTHOR
 
@@ -1612,6 +1614,7 @@ who has hacked on it unmercifully.
 
 =head1 THANKS TO
 
+Bruce Gray,
 Aristotle Pagaltzis
 and
 Ian Tegbo

@@ -1,6 +1,6 @@
 ---
 name: Getopt-Auto
-version: 1.9.0
+version: 1.9.1
 author:
   - 'Geoffrey Leach <geoff@hughes.net>'
 abstract: Option framework for command-line applications
@@ -18,7 +18,7 @@ build_requires:
 provides:
   Getopt::Auto:
     file: lib/Getopt/Auto.pm
-    version: 1.9.0
+    version: 1.9.1
   Getopt::Auto::PodExtract:
     file: lib/Getopt/Auto.pm
 generated_by: Module::Build version 0.2808

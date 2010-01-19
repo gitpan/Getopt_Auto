@@ -11,7 +11,7 @@
 #                Also, there's no way to split a bare option into letters.
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  Mon Aug 10 13:28:07 PDT 2009
 #===============================================================================
 
@@ -22,7 +22,7 @@ use Test::More tests => 14;
 use Test::Output;
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 ## no critic (ProhibitImplicitNewlines)
 ## no critic (ProtectPrivateSubs)
@@ -39,24 +39,26 @@ BEGIN {
 }
 
 our %options;
+if (%options) { }
+;    # Avoid complaints from perl-5.6.2
 my $EMPTY = q{};
 
 # What we expect to find in the spec list
 my @exspec = (
+    [   'bar', 'do a bar', 'This is the help for bar
+', \&bar,
+    ],
+    [ 'eq1', 'assignment op',         undef, \&eq1, ],
+    [ 'eq3', 'assignment op, no sub', undef, undef, ],
+    [   'foo', 'do a foo', 'This is the help for foo
+', \&foo,
+    ],
     [   'nosubs', 'bump a counter',
         'Nosub has -- surprise -- no associated sub
 ', undef,
     ],
     [   'tar', $EMPTY, 'This is the long help for tar, which has no short help
 ', \&tar,
-    ],
-    [   'bar', 'do a bar', 'This is the help for bar
-', \&bar,
-    ],
-    [ 'eq3', 'assignment op, no sub', undef, undef, ],
-    [ 'eq1', 'assignment op', undef, \&eq1, ],
-    [   'foo', 'do a foo', 'This is the help for foo
-', \&foo,
     ],
 );
 

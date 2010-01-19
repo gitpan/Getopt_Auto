@@ -10,7 +10,7 @@
 #                which result from the "non-magic" mode of Getopt::Auto
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  Fri Aug  7 14:04:29 PDT 2009
 #===============================================================================
 
@@ -18,7 +18,7 @@ use strict;
 use warnings;
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 use Test::More tests => 3;
 
@@ -37,8 +37,10 @@ use Getopt::Auto(
 );
 
 our %options;    # Will be assigned by Getopt::Auto
+if ( %options ) {}; # Avoid complaints from perl-5.6.2
 
 # What we expect to find in the spec list
+# Note: ordering here must correspond to that in use Getopt::Auto above.
 my @exspec = (
     [   '--foo', 'do a foo', 'Test
 ', \&foo

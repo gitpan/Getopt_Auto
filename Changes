@@ -8,3 +8,15 @@ Revision history for Perl extension Getopt::Auto.
     Completed according to original intent of incomplete
     version 1.0. Version is '1.9.0' in anticipation of going to
     2.0 when bugs are worked out.
+
+1.9.1 Sun Jan 10 15:49:08 PST 2010
+    Builtin help does not exit 0. Change 'exists' to 'defined' in test
+
+1.9.1 Mon Jan 18 08:28:57 PST 2010
+    Windows failure in test t/02-internals_magic.t
+    Construct the path using catfile() to avoid the problem of '/' vs '\'
+
+1.9.1 Mon Jan 18 08:31:32 PST 2010
+    Failures of Spec build on 5.6.x and 5.8.1 Perls
+    Mis-application of each() (ee `perldoc -f each`). Result is random.
+    Patch courtesy of Bruce Gray <bruce.gray@acm.org>.

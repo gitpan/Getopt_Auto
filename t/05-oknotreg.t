@@ -9,7 +9,7 @@
 #  DESCRIPTION:  Validate the oknotreg option`
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  Wed Dec  2 13:05:25 PST 2009
 #===============================================================================
 
@@ -20,7 +20,7 @@ use Test::More tests => 2;
 use Test::Output;
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars)
@@ -29,6 +29,7 @@ our $VERSION = "1.9.0";
 use Getopt::Auto( { 'oknotreg' => 1 } );
 
 our %options;
+if ( %options ) {}; # Avoid complaints from perl-5.6.2
 
 # Verify not a registered option
 @ARGV = qw{ --abc -def};

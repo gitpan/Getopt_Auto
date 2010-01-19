@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
 #      COMPANY:
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  11/05/2009 04:32:25 PM
 #     REVISION:  ---
 #===============================================================================
@@ -22,7 +22,7 @@ use strict;
 use warnings;
 
 use 5.006;
-our $VERSION = "1.9.0";
+our $VERSION = '1.9.1';
 
 use Test::More tests => 5;
 
@@ -49,6 +49,7 @@ use Getopt::Auto(
 our %options;    # Will be assigned by Getopt::Auto
 
 # What we expect to find in the spec list
+# Note: ordering here must correspond to that in use Getopt::Auto above.
 my @exspec = (
     [   '--foo', 'do a foo', 'Test
 ', \&foo

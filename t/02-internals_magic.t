@@ -10,7 +10,7 @@
 #                which result from the "magic" mode of Getopt::Auto
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.0
+#      VERSION:  1.9.1
 #      CREATED:  07/06/2009 03:27:58 PM PDT
 #===============================================================================
 
@@ -19,11 +19,12 @@ use warnings;
 
 use Test::More tests => 6;
 use Test::Output;
+use File::Spec;
 use Getopt::Auto( { 'test' => 1 } );
 
 use 5.006;
-our $VERSION = "1.9.0";
-my $me = 't/02-internals_magic.t';
+our $VERSION = '1.9.1';
+my $me = File::Spec->catfile( 't', '02-internals_magic.t' );
 
 ## no critic (RestrictLongStrings)
 ## no critic (ProhibitImplicitNewlines)
@@ -34,6 +35,7 @@ my $me = 't/02-internals_magic.t';
 
 # Will be assigned by Getopt::Auto
 our %options;
+if ( %options ) {}; # Avoid complaints from perl-5.6.2
 
 # What we expect to find in the spec list
 my @exspec = (
