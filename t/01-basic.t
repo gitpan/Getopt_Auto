@@ -11,7 +11,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
 #      COMPANY:
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  07/06/2009 03:27:58 PM PDT
 #     REVISION:  ---
 #===============================================================================
@@ -19,12 +19,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Output;
-use Getopt::Auto( { test => 1 } );
+use Getopt::Auto( { test => 1, nohelp=>1 } );
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (ProhibitImplicitNewlines)
 ## no critic (ProtectPrivateSubs)
@@ -83,6 +83,14 @@ stderr_is(
 );
 ok( $is_foo_called, 'Sub foo() was called' );
 isnt( $options{'x'}, 1, 'option "x" was not set' );
+
+# The most basic situation is the one where there are no options given
+@ARGV = qw( /twas/brillig/and/the/slythe/toes );
+stderr_isnt(
+    \&Getopt::Auto::_parse_args,
+    "Getopt::Auto:  /twas/brillig/and/the/slythe/toes is not a registered option\n",
+    '/twas/brillig/and/the/slythe/toes not flagged'
+);
 
 exit 0;
 

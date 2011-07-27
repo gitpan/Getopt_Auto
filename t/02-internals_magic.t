@@ -10,7 +10,7 @@
 #                which result from the "magic" mode of Getopt::Auto
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  07/06/2009 03:27:58 PM PDT
 #===============================================================================
 
@@ -23,7 +23,7 @@ use File::Spec;
 use Getopt::Auto( { 'test' => 1 } );
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 my $me = File::Spec->catfile( 't', '02-internals_magic.t' );
 
 ## no critic (RestrictLongStrings)
@@ -85,7 +85,7 @@ my $version = "This is $me version $VERSION
 ";
 
 @ARGV = qw(--version);
-stdout_is( \&Getopt::Auto::_parse_args, $version, 'Check version' );
+stderr_is( \&Getopt::Auto::_parse_args, $version, 'Check version' );
 
 my $help = "This is $me version $VERSION
 
@@ -99,7 +99,7 @@ This is the built-in help, exiting
 ";
 
 @ARGV = qw(--help);
-stdout_is( \&Getopt::Auto::_parse_args, $help, 'Check help' );
+stderr_is( \&Getopt::Auto::_parse_args, $help, 'Check help' );
 
 $help = "This is $me version $VERSION
 
@@ -111,7 +111,7 @@ This is the built-in help, exiting
 ";
 
 @ARGV = qw(--help --foo);
-stdout_is( \&Getopt::Auto::_parse_args, $help, 'Check help for foo' );
+stderr_is( \&Getopt::Auto::_parse_args, $help, 'Check help for foo' );
 
 exit 0;
 

@@ -11,7 +11,7 @@
 #                when running multiple files
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  07/06/2009 03:27:58 PM PDT
 #===============================================================================
 
@@ -24,7 +24,7 @@ package Internals_magic_multi;
 use Getopt::Auto;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireCheckedSyscalls)
 

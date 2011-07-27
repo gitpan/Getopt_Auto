@@ -10,7 +10,7 @@
 #                format, i.e, -f, --foo
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Sat Aug 15 14:37:57 PDT 2009
 #===============================================================================
 
@@ -20,7 +20,7 @@ use warnings;
 use Test::More tests => 7;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars)

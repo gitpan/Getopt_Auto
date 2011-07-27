@@ -10,7 +10,7 @@
 #                We also check options with POD formatting attached
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Sun Aug  9 16:38:44 PDT 2009
 #===============================================================================
 
@@ -21,7 +21,7 @@ use Test::More tests => 24;
 use Test::Output;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars)
@@ -34,7 +34,7 @@ BEGIN {
    # It's here because Getopt::Auto needs to look at it
     @ARGV
         = qw(-foo -bar bararg1 bararg2 notanarg -tar=tararg2 -nosub -foo1 -foo2 -foo3 --two -tt - -foobar);
-    use Getopt::Auto;
+    use Getopt::Auto{ 'nohelp' => 1 };
 }
 
 our %options;

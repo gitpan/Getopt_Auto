@@ -113,6 +113,14 @@ __END__
 
 =pod
 
+=begin stopwords
+notfound
+notwanted
+builtin
+nobare
+itemopt
+=end stopwords
+
 =head1 SYNOPSIS
 
 Shows the use of C<Getopt::Auto>.
@@ -183,13 +191,5 @@ Note that there is no '-i'
 This option has an integer argument.
 
 =back
-
-=begin stopwords
-notfound
-notwanted
-builtin
-nobare
-itemopt
-=end stopwords
 
 =cut

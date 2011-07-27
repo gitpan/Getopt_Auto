@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
 #      COMPANY:
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  11/05/2009 04:31:11 PM
 #     REVISION:  ---
 #===============================================================================
@@ -26,7 +26,7 @@ use Test::Output;
 use Getopt::Auto( { test => 1 } );
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (ProhibitImplicitNewlines)
 ## no critic (ProtectPrivateSubs)
@@ -113,7 +113,18 @@ is_deeply( Getopt::Auto::_get_options_ref(),
 @ARGV = qw(--foo --bar --tar --far);
 stderr_is(
     \&Getopt::Auto::_parse_args,
-    "Getopt::Auto: --far is not a registered option\n",
+    "Getopt::Auto: --far is not a registered option\n" .
+    "This is t/03-options_text.t version 1.9.4\n" .
+    "\n" .
+    "t/03-options_text.t --bar - do a bar\n" .
+    "t/03-options_text.t --foo - do a foo [*]\n" .
+    "t/03-options_text.t --help - This text\n" .
+    "t/03-options_text.t --tar\n" .
+    "t/03-options_text.t --version - Prints the version number\n" .
+    "\n" .
+    "More help is available on the topics marked with [*]\n" .
+    "Try t/03-options_text.t --help --foo\n" .
+    "This is the built-in help, exiting\n" ,
     '--far is not a registered option'
 );
 ok( $is_foo_called, 'Sub foo() was called' );

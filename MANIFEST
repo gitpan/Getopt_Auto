@@ -3,12 +3,12 @@ Changes
 MANIFEST
 README
 Build.PL
-META.yml
 scripts/tour.pl
 Makefile.PL
 t/00-load.t
 t/01-basic.t
 t/01-errors.t
+t/01-help.t
 t/02-internals_magic_multi.t
 t/02-internals_magic.t
 t/02-internals_multi_mult.t

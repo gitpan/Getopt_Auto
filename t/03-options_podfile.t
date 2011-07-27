@@ -12,7 +12,7 @@
 #                otherwise, the test is the same as 03.options_pod.t
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Mon Aug 10 15:14:54 PDT 2009
 #===============================================================================
 
@@ -22,7 +22,7 @@ use warnings;
 use Test::More tests => 7;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars)

@@ -9,7 +9,7 @@
 #  DESCRIPTION:  Test combinations of 'long' ('--') run-time options
 #
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  07/06/2009 03:27:58 PM PDT
 #===============================================================================
 
@@ -20,7 +20,7 @@ use Test::More tests => 17;
 use Test::Output;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars)
@@ -31,7 +31,7 @@ BEGIN {
    # It's here because Getopt::Auto needs to look at it
     @ARGV
         = qw(--foo --bar bararg1 bararg2 notanarg --tar-arr=tararg2 --nosubs --foo-bar -- --foobar);
-    use Getopt::Auto;
+    use Getopt::Auto{ 'nohelp' => 1 };
 }
 
 # Notice that the subroutine-global variables, such as $is_foo_called are

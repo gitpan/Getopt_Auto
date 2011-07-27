@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
 #      COMPANY:
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Mon Oct 19 15:02:10 PDT 2009
 #     REVISION:  ---
 #===============================================================================
@@ -25,7 +25,7 @@ use Test::More tests => 10;
 use Test::Output;
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProhibitPackageVars))
@@ -36,7 +36,7 @@ our %options;
 
 BEGIN {
     @ARGV = qw(foo -b --c);
-    use Getopt::Auto( { 'findsub' => 1 } );
+    use Getopt::Auto( { 'findsub' => 1, 'nohelp' => 1 } );
 }
 
 my $is_foo_called;
@@ -64,8 +64,8 @@ stderr_is(
         . "Getopt::Auto: --e is not a registered option\n",
     '-d and -e are not registered options'
 );
-ok( Getopt::Auto::_test_option('d') == 0,   '-d is not an option' );
-ok( Getopt::Auto::_test_option('--e') == 0, '--e is not an option' );
+ok( Getopt::Auto::test_option('d') == 0,   '-d is not an option' );
+ok( Getopt::Auto::test_option('--e') == 0, '--e is not an option' );
 ok( !exists $options{'-d'},                 '-d is not in %options' );
 ok( !exists $options{'--e'},                '--e is not in %options' );
 ok( $ARGV[0] eq '-d',  '-d returned to ARGV' );

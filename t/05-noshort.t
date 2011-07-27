@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
 #      COMPANY:
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Mon Oct 19 15:02:10 PDT 2009
 #     REVISION:  ---
 #===============================================================================
@@ -24,7 +24,7 @@ use warnings;
 use Test::More tests => 4;    # last test to print
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 ## no critic (RequireLocalizedPunctuationVars)
 ## no critic (ProtectPrivateSubs)
@@ -42,8 +42,8 @@ sub b { $is_b_called = 1; return; }
 
 ok( $is_foo_called,                         'foo() called' );
 ok( !defined($is_b_called),                 'b() not called' );
-ok( Getopt::Auto::_test_option('foo') == 1, 'foo is an option' );
-ok( Getopt::Auto::_test_option('b') == 0,   'b is not an option' );
+ok( Getopt::Auto::test_option('foo') == 1, 'foo is an option' );
+ok( Getopt::Auto::test_option('b') == 0,   'b is not an option' );
 
 exit 0;
 

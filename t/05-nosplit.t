@@ -13,7 +13,7 @@
 #        NOTES:  ---
 #       AUTHOR:  Geoffrey Leach (), <geoff@hughes.net>
 #      COMPANY:
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #      CREATED:  Tue Dec 29 16:13:06 PST 2009
 #     REVISION:  ---
 #===============================================================================
@@ -30,10 +30,10 @@ use Test::Output;
 ## no critic (ProhibitPackageVars)
 
 use 5.006;
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 our %options;
 
-use Getopt::Auto( { 'nobundle' => 1 } );
+use Getopt::Auto( { 'nobundle' => 1, 'nohelp' => 1 } );
 
 my $is_bar_called;
 sub bar { $is_bar_called = 1; return; }
@@ -47,7 +47,7 @@ stderr_is(
 );
 
 ok( !defined($is_bar_called),                'bar() not called' );
-ok( Getopt::Auto::_test_option('-bar') == 0, '-bar is not an option' );
+ok( Getopt::Auto::test_option('-bar') == 0, '-bar is not an option' );
 ok( !defined $options{'-bar'},               '-bar is not set' );
 ok( !defined $options{'-b'},                 '-b is not set' );
 ok( !defined $options{'-a'},                 '-a is not set' );

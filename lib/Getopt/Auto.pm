@@ -13,12 +13,12 @@
 # REQUIREMENTS:  --- See Build.PL
 #         BUGS:  --- Hah!
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
-#      VERSION:  1.9.1
+#      VERSION:  1.9.4
 #     REVISION:  ---
 #===============================================================================
 
 #  Copyright (C) 2003-2009, Simon Cozens
-#  Copyright (C) 2010, Geoffrey Leach
+#  Copyright (C) 2010-2011, Geoffrey Leach
 
 package Getopt::Auto;
 
@@ -42,7 +42,7 @@ Readonly::Scalar my $LONG    => 2;
 Readonly::Array my @TYPES    => qw( bare short long );
 Readonly::Array my @PREFIXES => ( $EMPTY, $DASH, $DDASH );
 
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.4';
 
 # Perlcritic complains about print to STDOUT. As this is merely for
 # diagnostic purposes, it seems futile to fix them.
@@ -54,7 +54,7 @@ our $VERSION = '1.9.1';
 # of a particular script or module
 # Each element is a list of
 # 0: [package, file], as returned by caller() in import()
-# 1: The package's options hash, or main::options
+# 1: The package's options hash (our %options), or main::options
 # 2: Hash of controls as given in call of Getopt::Auto
 #    nobare, noshort, nolong, trace, init, findsub
 my @callers;
@@ -71,6 +71,7 @@ my %config = (
     'noshort'  => undef,
     'nolong'   => undef,
     'nobare'   => undef,
+    'nohelp'   => undef,
     'nobundle' => undef,
     'oknotreg' => undef,
     'okerror'  => undef,
@@ -122,6 +123,10 @@ END {
 # Please note: subroutine names that begin with an underscore are internal.
 # Calling sequence and/or existence is not guaranteed for future versions.
 
+# $their_version is managed by Getopt::Auto::PodExtract::preprocess_line()
+# _set_their_version() assigns and _get_their_version() reports.
+# their_version is the value of $VERSION in the source POD.
+
 my $their_version;
 
 sub _set_their_version {
@@ -149,11 +154,17 @@ sub _get_spec_ref {
 # Values are 'short', 'long', 'bare', default 'long' or 'undef' meaning use the POD;
 my $help_p = $LONG;
 
-my %options;
+# %options contains the option registration data extracted from the POD
+# (or from the use Getopt::Auto statement). It's loaded by _parse_pod()
+# and used by _parse_args() when an option is discovered on the run-time command.
 
-sub _test_option {
+our %options;    ## no critic (ProhibitPackageVars)
+
+# This sub is intended for testing only. Absence of leading '_' is only to
+# satisfy perlcritic.
+sub test_option {
     my $query = shift;
-    return exists $options{$query} && !_restricted($query);
+    return exists $options{$query} && !_is_restricted($query);
 }
 
 sub _get_options_ref {
@@ -166,7 +177,7 @@ sub _trace {
     }
     my $arg = shift;
     chomp $arg;
-    print "$arg\n";
+    print "Getopt::Auto trace: $arg\n";
     return;
 }
 
@@ -175,7 +186,7 @@ sub _trace_spec {
         return;
     }
     my $spec = shift;
-    print "Spec for $spec->[$SPEC_NAME]: ";
+    print "Getopt::Auto trace: Spec for $spec->[$SPEC_NAME]: ";
     print length $spec->[$SPEC_SHORT]
         ? "$spec->[$SPEC_SHORT], "
         : "no short help, ";
@@ -193,7 +204,7 @@ sub _trace_argv {
     if ( not defined $config{'trace'} ) {
         return;
     }
-    _trace( 'ARGV now: (' . join( ', ', @ARGV ) . ')' );
+    _trace( 'Getopt::Auto trace: ARGV now: (' . join( ', ', @ARGV ) . ')' );
     return;
 }
 
@@ -218,7 +229,8 @@ sub _clean_func {
 }
 
 # Checks $pkg to see if there's a subroutine $name.
-# Return it if so.
+# $name will be an option, that is for --foo we look to 
+# see if there's a sub foo() Return it if so.
 
 sub _check_func {
     my ( $name, $pkg ) = @_;
@@ -245,7 +257,12 @@ sub _check_func {
 
 # Look in all packages for a sub $name. If so, return it
 # and store it in %options for future use. Note that
-# 'registered' is not set, do the option does not become.
+# at the point where this sub is called, we've determined
+# that the option is not 'registered' and we wish to avoid
+# registering the option by accident
+# An nregistered option is something like --foo, where --foo
+# did not appear in a =head line in the POD.
+
 sub _check_all_sub {
     my $name = shift;
     _trace("Checking for sub $name");
@@ -267,7 +284,7 @@ sub _check_all_sub {
     return;
 }
 
-sub _restricted {
+sub _is_restricted {
     my $arg      = shift;
     my $arg_type = _option_type($arg);
     if (( ( $arg_type == $BARE ) && ( defined $config{'nobare'} ) )
@@ -283,6 +300,7 @@ sub _restricted {
 }
 
 # The specs parameter is assumed to be a ref to a 4-element array
+# The elementts are options found either in the POD or the use Getopt::Auto
 
 sub _load_options {
     my ( $specs, $caller_local ) = @_;
@@ -339,7 +357,7 @@ sub _check_spec {
 
 sub import {
     my $class = shift;    # Getopt::Auto
-         #$DB::single = 2;      ## no critic (ProhibitPackageVars)
+    $DB::single = 2;      ## no critic (ProhibitPackageVars)
 
     my @caller = caller;
     pop @caller;
@@ -387,24 +405,27 @@ sub import {
 
 sub _option_type {
     my $option = shift;
-    return $LONG if not defined $option;
+    return $BARE if not defined $option;
     $option =~ m{\A$DDASH}smx and return $LONG;
     $option =~ m{\A$DASH}smx  and return $SHORT;
     $option =~ m{\A\w}smx     and return $BARE;
-    return $LONG;
+    return $BARE;
 }
+
+# Process the files in the script looking for option registrations
+# and build the global @spec array
 
 sub _parse_pod {
 
     foreach my $caller_local (@callers) {
 
         # We're doing magic!
+
         # Do the parsing. The -want_nonPODs causes Pod::Parser (the base) to
-        # call the preprocess_line sub with all input, so we can scan for
+        # call the preprocess_line() sub with all input, so we can scan for
         # an assignment to $VERSION. Overhead is negligable.
 
-        # The $caller global is used indirectly by PodExtract,
-        # via _check_func()
+        # The $caller global is used indirectly by PodExtract, via _check_func()
         $caller = $caller_local;
 
         my $pod = Getopt::Auto::PodExtract->new( -want_nonPODs => 1 );
@@ -440,7 +461,14 @@ sub _parse_pod {
         }
 
         # Now move what the POD processing found into a useful format.
-        # Correction 1.9.0 => 1.9.1 courtesy of Bruce Gray
+        # $pod ($self in Getopt::Auto::PodExtract subs) has, if we've found
+        # any =item or =head[2|3|4] lines that parse out as being option
+        # registrations.
+        
+        # This code builds the @spec global array as a stack of spec definitions
+        # which will be used later on in option processing.
+        #
+        # Correction 1.9.0 => 1.9.2 courtesy of Bruce Gray
         my @this_spec;
         foreach my $n ( sort keys %{ $pod->{'funcs'} } ) {
             my $spec = $pod->{'funcs'}{$n};
@@ -480,6 +508,9 @@ sub _set_option {
     else {
         $opt = $options{$arg}{'options'};
     }
+    # At this point $opt is the hash defined by "our %options" (or main::options)
+    # in the _user's_ code. That's a different entity form %options in this code
+    # which saves the registration info we collected by parsing the POD
 
     # This is true for our --help and --version
     if ( not defined $opt ) { return 0; }
@@ -488,6 +519,7 @@ sub _set_option {
     # op -- arg is registered.
     _trace("Bumping $opt for $arg");
     no strict 'refs';    ## no critic (ProhibitNoStrict)
+    # And here we bump the use count for the option
     ${$opt}{$arg}++;
 
     return 1;
@@ -535,6 +567,24 @@ sub _notreg {
     my $text = shift;
     if ( defined $config{'oknotreg'} ) { return; }
     _error(qq{$text is not a registered option});
+
+    if ( defined $config{'nohelp'} ) { return; }
+    
+    # Make an attempt to add useful info
+    # If user has not provided help, this will be the builtin version
+    if ( exists $options{'--help'}{'code'} ) {
+        _do_option_action('--help');
+        return;
+    }
+
+    # If user has not provided help, this will be the builtin version
+    if ( exists $options{'-h'}{'code'} ) {
+        _do_option_action('-h');
+        return;
+    }
+
+    # Well get here iff the user has provided non-fatal help
+    # Or, 'test' is configured
     return;
 }
 
@@ -613,7 +663,8 @@ sub _parse_args {    ## no critic (ProhibitExcessComplexity)
     # Check that builtin help is defined according to the option type
     _check_help();
 
-    # Check each script/module for init sub to execute
+    # Check each script/module for an init sub to execute
+    # If the user has defined one, its in the @callers array at [2].
     foreach my $caller_local (@callers) {
         my $init_sub = $caller_local->[2]{'init'};
         if ( defined $init_sub ) {
@@ -639,7 +690,7 @@ sub _parse_args {    ## no critic (ProhibitExcessComplexity)
         }
 
         # Check restricted option
-        if ( _restricted($argv) ) {
+        if ( _is_restricted($argv) ) {
             _trace("Option $argv is restricted, skipping");
             _not_option($argv);
             next;
@@ -745,14 +796,14 @@ sub _sort_sub {
 }
 
 sub _version {
-    print "This is $callers[0][0][1]";
+    print STDERR "This is $callers[0][0][1]";
     if ( defined $their_version and length $their_version ) {
-        print " version $their_version";
+        print STDERR " version $their_version";
     }
     else {
-        print " (no version is specified)";
+        print STDERR " (no version is specified)";
     }
-    print "\n\n";
+    print STDERR "\n\n";
     return;
 }
 
@@ -763,51 +814,52 @@ sub _help {
     if ( my @help = grep { exists $options{$_} } @ARGV ) {
         my $what = shift @ARGV;
         if ( exists $options{$what}{'shorthelp'} ) {
-            print
+            print STDERR 
                 "$callers[0][0][1] $what - $options{$what}{'shorthelp'}\n\n";
             if ( defined $options{$what}{'longhelp'} ) {
-                print $options{$what}{'longhelp'}, "\n";
+                print STDERR $options{$what}{'longhelp'}, "\n";
             }
         }
         else {
-            print "No help available for $what\n";
+            print STDERR "No help available for $what\n";
         }
     }
     else {
 
         my $and_there_s_more = 0;
         foreach ( sort _sort_sub keys %options ) {
-            print "$callers[0][0][1] $_";
+            print STDERR "$callers[0][0][1] $_";
             if ( defined $options{$_}{'shorthelp'}
                 and ( $options{$_}{'shorthelp'} =~ m{\S}smx ) )
             {
-                print " - $options{$_}{'shorthelp'}";
+                print STDERR " - $options{$_}{'shorthelp'}";
             }
             if ( defined $options{$_}{'longhelp'}
                 and ( $options{$_}{'longhelp'} =~ m{\S}smx ) )
             {
                 $and_there_s_more++;
-                print q{ [*]};
+                print STDERR q{ [*]};
             }
-            print "\n";
+            print STDERR "\n";
         }
 
         if ($and_there_s_more) {
-            print <<"EOF";
+            print STDERR <<"EOF";
 
 More help is available on the topics marked with [*]
 Try $callers[0][0][1] $PREFIXES[$help_p]help $PREFIXES[$help_p]foo
 EOF
         }
     }
-    print qq{This is the built-in help, exiting\n};
+    print STDERR qq{This is the built-in help, exiting\n};
     if ( not defined $config{'test'} ) { exit 0; }
     return;
 }
 
 1;
 
-# This package exists to provide replacement for the subs provided by Pod::Parser
+# This package exists to provide replacement for the default subs (of the same name)
+# provided by Pod::Parser
 # The way it works is that they are called at appropriate times to extract the
 # information we need to support the options.
 # The sub names are determined by Pod::Parser, so don't meddle.
@@ -929,6 +981,7 @@ __END__
 =pod
 
 =begin stopwords
+
 CVS
 Hah
 executables
@@ -944,6 +997,7 @@ Pagaltzis
 Tegbo
 Forgetaboutit
 Pre
+
 =end stopwords
 
 =head1 NAME
@@ -1204,6 +1258,8 @@ The long help is copied verbatim from the POD, without formatting.
 
 Options discovered in POD are referred to as I<registered>,
 Options from L</use Getopt::Auto([...])> are also I<registered>.
+Otherwise, anything on the command line that I<looks> like an option
+will get an error message. These are called I<unregistered> options.
 
 =head2 Option Subroutines
 
@@ -1318,6 +1374,27 @@ will cause C<$options{'option'}> in the B<use>-ing package to be incremented.
 the C<%options> hash as C<--add> or C<-a>. Omit the quotes and Perl will try to pre-increment
 your C<sub add{...}>!
 
+A note about interaction with your code.
+
+=over 4
+
+=item If you say C<our %options>
+
+The hash will be managed as above.
+
+=item If you say nothing
+
+You'll get a C<%main::options> defined for you. If you use C<%options> in other ways, 
+that could result in confusion.
+
+=item If you say C<my %options>
+
+C<%main::options> will be assigned as above, and will be accessible (unless you C<use strict>)
+until your C<my %options> is executed.
+
+=back
+
+
 =head3 Mixing Option Styles
 
 C<Getopt::Auto> is tolerant of mixed bare, short and long option styles.
@@ -1383,6 +1460,10 @@ C<nobundle =E<gt> 1> - Don't de-group short options
 
 =item *
 
+C<nohelp =E<gt> 1> - Don't provide help for unregistered options
+
+=item *
+
 C<oknotreg =E<gt> 1> - Do not complain if unregistered options are found on the command line
 
 =item *
@@ -1407,6 +1488,7 @@ the order processed by Perl.
 C<findsub =E<gt> 1> - Enable using unegistered options
 
 If C<--foo> is not registered but there is a C<sub foo{...}>, it will be called.
+This implies C<oknotreg =E<gt> 1> .
 
 =item *
 
@@ -1461,6 +1543,8 @@ C<Getopt::Auto> automatically provides C<help> and C<version> options,
 following  the style (long, short or bare) that is (numerically) the most common
 in the POD or the B<use> statement. And if there's no POD? Then the default is
 to recognize C<--help> and C<--version>.
+
+C<help> and C<version> are output to STDERR.
 
 C<--help> lists the commands available and the short help messages. If a
 C<--help --option> is given for a option with L</Long Help>, the
@@ -1554,6 +1638,10 @@ C<Getopt::Auto> has found E<lt>optionE<gt> (C<--foobar>) on the command line, bu
 not make it a L</Registered Option>. If this is the way you like to do things, you need to 
 C<use Getopt::Auto({oknotreg=>1}).
 
+If you have an unregistered option, you will also get help, if it is available.
+This means the subroutine that you specified for --help, for -h or the builtin
+help if neither are available. To avoid all of this, say C<use Getopt::Auto({nohelp=>1}).
+
 Getopt::Auto: E<lt>optionE<gt> (from E<lt>some optionE<gt>) is not a registered option
 
 C<Getopt::Auto> has found E<lt>optionE<gt> (C<-foo>) on the command line, but you did 
@@ -1600,7 +1688,7 @@ removed in future versions unless someone makes a fuss.
 
 =head1 VERSION
 
-Version 1.9.1
+Version 1.9.4
 
 =head1 AUTHOR
 
