@@ -36,3 +36,7 @@ Revision history for Perl extension Getopt::Auto.
     Added comments.
     Tue Jul 26 20:13:22 PDT 2011
     Repair for 69822 (=begin/=end stopwords need blank lines)
+
+1.9.5 Tue Jul 26 20:55:31 PDT 2011
+    Fixed un-commented DB::
+    Added example for uage()

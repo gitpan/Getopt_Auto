@@ -13,7 +13,7 @@
 # REQUIREMENTS:  --- See Build.PL
 #         BUGS:  --- Hah!
 #       AUTHOR:  Geoffrey Leach (), geoff@hughes.net
-#      VERSION:  1.9.4
+#      VERSION:  1.9.5
 #     REVISION:  ---
 #===============================================================================
 
@@ -42,7 +42,7 @@ Readonly::Scalar my $LONG    => 2;
 Readonly::Array my @TYPES    => qw( bare short long );
 Readonly::Array my @PREFIXES => ( $EMPTY, $DASH, $DDASH );
 
-our $VERSION = '1.9.4';
+our $VERSION = '1.9.5';
 
 # Perlcritic complains about print to STDOUT. As this is merely for
 # diagnostic purposes, it seems futile to fix them.
@@ -357,7 +357,7 @@ sub _check_spec {
 
 sub import {
     my $class = shift;    # Getopt::Auto
-    $DB::single = 2;      ## no critic (ProhibitPackageVars)
+    #$DB::single = 2;      ## no critic (ProhibitPackageVars)
 
     my @caller = caller;
     pop @caller;
@@ -1581,6 +1581,17 @@ instead, it will work fine.
 
 L<Pod::Usage> does a nice job of turning your POD into help.
 
+Here's a simple usage().
+
+=over 4
+
+    sub usage {
+        pod2usage( -verbose => 2 );
+        exit 0;
+    }
+
+=back
+
 =head1 ERRORS
 
 C<Getopt::Auto> tries not to complain, but sometimes life is just too hard!
@@ -1688,7 +1699,7 @@ removed in future versions unless someone makes a fuss.
 
 =head1 VERSION
 
-Version 1.9.4
+Version 1.9.5
 
 =head1 AUTHOR
 
